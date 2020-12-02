@@ -1,0 +1,23 @@
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300&display=swap" rel="stylesheet">
+
+<div class="modalContainer" style="font-family: 'IBM Plex Sans', sans-serif;">
+  <div class="uploadButtonDiv">
+    <div class="uploadContainer">
+      <div class="uploadLabel">Upload</div>
+      <input
+        type="file"
+        id="injuryPicture"
+        name="injuryPicture"
+        class="injuryPicture"
+        onchange="readURL(this);"
+      />
+    </div>
+    <div class="attachImageDiv">
+      <img class="attachImage" src="/assets/default-placeholder-image.png" />
+    </div>
+    <div class="buttonDiv">
+        <div class="cancelButton">Cancel</div>
+        <div class="uploadButton">Attach</div>
+    </div>
+  </div>
+</div>

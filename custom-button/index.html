@@ -1,0 +1,69 @@
+<script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"
+></script>
+<script src="/js/modalDisplayImage.js"></script>
+<script src="/js/modalUploadImage.js"></script>
+<script src="/js/addCustomButton.js"></script>
+
+<link rel="stylesheet" href="/css/modal.css" />
+
+<script>
+  window.watsonAssistantChatOptions = {
+    integrationID: "<integration_id>", // The ID of this integration.
+    region: "eu-gb", // The region your integration is hosted in.
+    serviceInstanceID: "<service_id>", // The ID of your service instance.
+
+    onLoad: function (instance) {
+      function handler(event) {
+        console.log(JSON.stringify(event.data.output.user_defined));
+
+        if (typeof event.data.output.user_defined != "undefined") {
+          return new Promise(function (resolve, reject) {
+            if (event.data.output.user_defined.action == "analyzeImage") {
+              const checkVR = setInterval(() => {
+                if (typeof window.analyzeImageResults != "undefined") {
+                  event.data.output.generic[0].text =
+                    "Based on your image, it seems like you are suffering from a <b>" +
+                    window.analyzeImageResults.images[0].classifiers[0]
+                      .classes[0].class +
+                    "</b> injury";
+                  event.data.output.generic.push({
+                    response_type: "text",
+                    text: "Do you want recommendations for a nearby doctor?",
+                  });
+                  clearInterval(checkVR);
+                  resolve();
+                }
+              }, 2000);
+            }
+
+            if (event.data.output.user_defined.action == "location") {
+              // added code for pre:send event
+              event.data.context.skills["main skill"] = { user_defined: {} };
+              event.data.context.skills[
+                "main skill"
+              ].user_defined.location = true;
+              resolve();
+            }
+
+            if (event.data.output.user_defined.action == "showGoogleResults") {
+              window.currentAddress =
+                event.data.context.skills["main skill"].user_defined.address;
+              resolve();
+            }
+          });
+        }
+      }
+      instance.on({ type: "pre:receive", handler: handler });
+      instance.render();
+    },
+  };
+  setTimeout(function () {
+    const t = document.createElement("script");
+    t.src =
+      "https://web-chat.global.assistant.watson.appdomain.cloud/loadWatsonAssistantChat.js";
+    document.head.appendChild(t);
+  });
+</script>
